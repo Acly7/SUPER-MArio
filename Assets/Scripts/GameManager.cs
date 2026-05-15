@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,11 +11,23 @@ public class GameManager : MonoBehaviour
     public int lives { get; private set; }
     public int coins { get; private set; }
 
+    // NUEVAS VARIABLES
+    public int score { get; private set; }
+    public float time = 300f;
+
+    // TEXTOS UI
+    public TextMeshProUGUI tiempoTXT;
+    public TextMeshProUGUI monedasTXT;
+    public TextMeshProUGUI puntajeTXT;
+
     private void Awake()
     {
-        if (Instance != null) {
+        if (Instance != null)
+        {
             DestroyImmediate(gameObject);
-        } else {
+        }
+        else
+        {
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -22,7 +35,8 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (Instance == this) {
+        if (Instance == this)
+        {
             Instance = null;
         }
     }
@@ -34,10 +48,27 @@ public class GameManager : MonoBehaviour
         NewGame();
     }
 
+    // ACTUALIZAR CONTADORES
+    private void Update()
+    {
+        time -= Time.deltaTime;
+
+        if (tiempoTXT != null)
+            tiempoTXT.text = "Tiempo: " + Mathf.Round(time);
+
+        if (monedasTXT != null)
+            monedasTXT.text = "Monedas: " + coins;
+
+        if (puntajeTXT != null)
+            puntajeTXT.text = "Puntaje: " + score;
+    }
+
     public void NewGame()
     {
         lives = 3;
         coins = 0;
+        score = 0;
+        time = 300f;
 
         LoadLevel(1, 1);
     }
@@ -72,16 +103,21 @@ public class GameManager : MonoBehaviour
     {
         lives--;
 
-        if (lives > 0) {
+        if (lives > 0)
+        {
             LoadLevel(world, stage);
-        } else {
+        }
+        else
+        {
             GameOver();
         }
     }
 
+    // MONEDAS
     public void AddCoin()
     {
         coins++;
+        score += 100;
 
         if (coins == 100)
         {
@@ -90,9 +126,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // VIDAS
     public void AddLife()
     {
         lives++;
     }
 
+    // PUNTOS POR ENEMIGO
+    public void AddEnemyPoints()
+    {
+        score += 200;
+    }
 }
